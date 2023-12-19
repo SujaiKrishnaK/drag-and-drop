@@ -1,0 +1,14 @@
+.element{     
+    background-color: white;
+    padding:10px;
+    padding-left:0px;
+    border-radius: 5px;
+    text-align: left;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;   
+    cursor:pointer
+}
+.element-drag-name:hover{
+    cursor: grab;
+}
