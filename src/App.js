@@ -21,12 +21,12 @@ function App() {
 
   useEffect(() => {
     let stored = JSON.parse(localStorage.getItem("elements-alma"));
-    
-    if (stored.length) {      
+
+    if (stored?.length) {
       setElements(stored);
     }
     window.addEventListener("beforeunload", () => {
-      if (elements.length) {
+      if (elements?.length) {
         let el = JSON.stringify(elements);
         localStorage.setItem("elements-alma", el);
       }
@@ -37,12 +37,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (elements.length) {
+    if (elements?.length) {
       let el = JSON.stringify(elements);
       localStorage.setItem("elements-alma", el);
     }
   }, [elements]);
-  
+
   const dragHandler = (e, ele) => {
     e.preventDefault();
     setIsEdit(false);
@@ -102,29 +102,32 @@ function App() {
   };
   return (
     <div className="App">
-      <div className="">
-        <Sidebar dragHandler={dragHandler} />
-        <Playground
-          elements={elements}
-          configVals={configVals}
-          isEdit={isEdit}
-          openModal={openModal}
-          onEdit={onEdit}
-          setIsEdit={setIsEdit}
-          setConfigVals={setConfigVals}
-          deleteElem={deleteElem}
-        />
-
-        {open && (
-          <CustomModal
-            open={open}
+      <div className="grid grid-cols-12 h-full">
+        <div className="col-span-9 max-[495px]:col-span-7 bg-[#ccc]">          
+          <Playground
+            elements={elements}
             configVals={configVals}
-            onChange={onChange}
-            closeModal={handleCloseModal}
-            onSave={onSave}
+            isEdit={isEdit}
+            openModal={openModal}
+            onEdit={onEdit}
+            setIsEdit={setIsEdit}
+            setConfigVals={setConfigVals}
+            deleteElem={deleteElem}
           />
-        )}
+        </div> 
+        <div className="col-span-3 max-[495px]:col-span-5 bg-[#000]">        
+          <Sidebar dragHandler={dragHandler} exportJson={elements} />
+        </div>
       </div>
+      {open && (
+        <CustomModal
+          open={open}
+          configVals={configVals}
+          onChange={onChange}
+          closeModal={handleCloseModal}
+          onSave={onSave}
+        />
+      )}
     </div>
   );
 }

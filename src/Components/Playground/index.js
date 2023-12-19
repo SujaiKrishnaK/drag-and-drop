@@ -20,21 +20,14 @@ const Playground = (props) => {
       onEdit(obj, true);
       setActiveEl(obj);
     }
-    if (e.key === "Delete" || e.key === "Backspace") {
+    if (e.key === "Delete") {
       deleteElem(obj);
     }
   };
 
   const onPlaygroundDrop = (e) => {
-    // const containerRect = e.currentTarget.getBoundingClientRect();
-    // if (
-    //   e.clientX >= containerRect.left &&
-    //   e.clientX <= containerRect.right &&
-    //   e.clientY >= containerRect.top &&
-    //   e.clientY <= containerRect.bottom
-    // ) {
-    const x = e.clientX - e.target.offsetLeft - 10;
-    const y = e.clientY - e.target.offsetTop - 25;
+    const x = e.clientX || e.changedTouches[0].clientX;
+    const y = e.clientY || e.changedTouches[0].clientY;
     if (isEdit) {
       let values = { ...configVals };
       values.x = x;
@@ -45,9 +38,6 @@ const Playground = (props) => {
       setIsEdit(false);
       openModal(x, y);
     }
-    // } else {
-    //   alert("Dropping here not allowed!")
-    // }
   };
   const onEditDrag = (obj) => {
     setActiveEl(obj);
@@ -76,6 +66,7 @@ const Playground = (props) => {
             top: obj.y,
           }}
           onDrag={() => onEditDrag(obj)}
+          onTouchMove={() => onEditDrag(obj)}
           autoFocus={activeEl?.id === obj.id}
           onKeyDown={(e) => onEnterKey(e, obj)}
         >
@@ -100,6 +91,7 @@ const Playground = (props) => {
             top: obj.y,
           }}
           onDrag={() => onEditDrag(obj)}
+          onTouchMove={() => onEditDrag(obj)}
           autoFocus={activeEl?.id === obj.id}
           onKeyDown={(e) => onEnterKey(e, obj)}
         ></input>
@@ -111,7 +103,7 @@ const Playground = (props) => {
           draggable
           className={`${
             activeEl?.id === obj.id ? "show-selected" : ""
-          } playground-inp`}
+          } playground-inp playground-inp-btn`}
           key={obj.id}
           onMouseDown={() => setActiveEl(obj)}
           style={{
@@ -123,6 +115,7 @@ const Playground = (props) => {
             color: "white",
           }}
           onDrag={() => onEditDrag(obj)}
+          onTouchMove={() => onEditDrag(obj)}
           autoFocus={activeEl?.id === obj.id}
           onKeyDown={(e) => onEnterKey(e, obj)}
         >
@@ -140,15 +133,15 @@ const Playground = (props) => {
   };
 
   return (
-    
-      <div
-        className="bg-[#ccc] flex h-screen relative overflow-hidden playground-main"
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => onPlaygroundDrop(e)}
-      >
-        {renderElement(elements)}
-      </div>
-    
+    <div
+      className="bg-[#ccc] overflow-x-scroll relative h-full"
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => onPlaygroundDrop(e)}
+      onTouchEndCapture={(e) => onPlaygroundDrop(e)}
+    >
+      <div className="hidden"></div>    
+      {renderElement(elements)}
+    </div>
   );
 };
 

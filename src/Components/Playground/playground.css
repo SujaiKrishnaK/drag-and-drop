@@ -1,11 +1,7 @@
 
 .playground-inp {
   position: absolute;
-
-  /* width: auto;
-  height: auto; */
-  /* max-width: fit-content; */
-  padding: 10px;
+  touch-action: none;
 }
 .playground-inp:hover{
   outline: 1px solid #FF0000;
@@ -13,10 +9,6 @@
 .show-selected{
   outline: 1px solid #FF0000;
 }
-
-
-/* @media only screen and (max-width: 600px) {
-.playground-main{
-  width: 50%;
+.playground-inp-btn{
+  padding: 0 10px 0 10px;
 }
-} */
