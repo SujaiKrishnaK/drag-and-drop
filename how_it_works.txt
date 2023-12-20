@@ -1,0 +1,51 @@
+CODE STRUCTURE:
+
+app -> 
+src -> components -> Playground
+                  -> Sidebar
+    -> reusables  -> Element
+                  -> Input
+                  -> Modal
+    -> utils      -> Constants
+
+STEPS TO RUN:
+
+1.git clone https://github.com/SujaiKrishnaK/drag-and-drop.git
+2.cd drag-and-drop
+3.npm install
+4.npm start
+
+CODE FLOW:
+
+1. Element's Drag Icon on mousedown will make the 
+   parent div draggable(mouse up -> draggable = false)
+2. On Drag event will trigger drag handler in App.js
+3. In drag handler we will set the dragged element and set current element to be configured
+4. On Drop event will be triggered in playground, here we get x and y position of mouse
+    and call the open modal function passing x and y.
+5. open modal will trigger the modal, where we configure x y font height font weight text (defined in utils/constants)
+6. on clicking save changes configuration will be pushed into elements
+7. elements will be mapped inside playground and rendered in UI based on configs
+
+    A.Edit
+1. on key down event on any element we open modal.
+2. edit any input elements
+3. on save changes we find the object of the element and save it to elements 
+to re render
+
+    B. Delete
+1. detect key down delete event
+2. filter elements and save
+
+    C. for mobile
+1. onTouchEndCapture, onTouchStart, onTouchEnd
+    we use these to drag and drop on touch devices
+
+    D. Persist
+1. on every change of elements state - we save it local storage
+2. retrieved when refreshed
+
+    E. JSON Export
+1. Added a link to download JSON file of elements dropped
+
+
