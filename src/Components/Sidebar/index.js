@@ -5,14 +5,14 @@ import Element from "../../Reusables/Element";
 import { ELEMENT_TYPES } from "../../Utils/Constants";
 
 const Sidebar = (props) => {
-  const { dragHandler, exportJson } = props;
+  const { dragHandler, exportJson,setTouched,touched } = props;
   return (
     <div className="relative text-[#fff] p-5 flex flex-col justify-start items-center overflow-hidden">
       <h6 className="text-[100%]">BLOCKS</h6>
       <div className="w-full flex-wrap text-[#000]" >
         {ELEMENT_TYPES.map((ele) => (
           <div className="my-2" key={uuidv4()}>
-            <Element ele={ele.name} dragHandler={dragHandler} />
+            <Element ele={ele.name} dragHandler={dragHandler} setTouched={setTouched} touched={touched}/>
           </div>
         ))}
       </div>
@@ -21,7 +21,7 @@ const Sidebar = (props) => {
         href={`data:text/json;charset=utf-8,${encodeURIComponent(
           JSON.stringify(exportJson)
         )}`}
-        download="filename.json"
+        download="alma-base.json"
       >
         Download JSON
       </a>

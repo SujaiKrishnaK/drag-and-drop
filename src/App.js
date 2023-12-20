@@ -17,19 +17,24 @@ function App() {
   const [open, setOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [elements, setElements] = useState([]);
+  const [mobileDrag, setMobileDrag] = useState(0);
+  const [touched, setTouched] = useState(false);
   const [configVals, setConfigVals] = useState(initialConfig);
 
   useEffect(() => {
-    let stored = JSON.parse(localStorage.getItem("elements-alma"));
+    if (mobileDrag) {
+      openModal();
+      saveToStorage();
+    }
+  }, [mobileDrag]);
 
+  useEffect(() => {
+    let stored = JSON.parse(localStorage.getItem("elements-alma"));
     if (stored?.length) {
       setElements(stored);
     }
     window.addEventListener("beforeunload", () => {
-      if (elements?.length) {
-        let el = JSON.stringify(elements);
-        localStorage.setItem("elements-alma", el);
-      }
+      saveToStorage();
     });
     return () => {
       window.removeEventListener("beforeunload", () => {});
@@ -43,18 +48,32 @@ function App() {
     }
   }, [elements]);
 
-  const dragHandler = (e, ele) => {
+  const dragHandler = (e, ele, isMobile) => {
     e.preventDefault();
     setIsEdit(false);
     let values = { ...configVals };
     values["element"] = ele;
+    if (isMobile) {
+      values.x = isMobile.x;
+      values.y = isMobile.y;
+      setMobileDrag(mobileDrag + 1);
+    }
     setConfigVals(values);
+  };
+
+  const saveToStorage = () => {
+    if (elements?.length) {
+      let el = JSON.stringify(elements);
+      localStorage.setItem("elements-alma", el);
+    }
   };
 
   const openModal = (x, y) => {
     let values = { ...configVals };
-    values.x = x;
-    values.y = y;
+    if (x && y) {
+      values.x = x;
+      values.y = y;
+    }
     setConfigVals(values);
     setOpen(true);
   };
@@ -80,6 +99,7 @@ function App() {
     let filtered = elms.filter((el) => el.id !== ele.id);
     setElements(filtered);
   };
+
   const onSave = (editedConf) => {
     let el = [...elements];
     if (!isEdit) {
@@ -103,7 +123,7 @@ function App() {
   return (
     <div className="App">
       <div className="grid grid-cols-12 h-full">
-        <div className="col-span-9 max-[495px]:col-span-7 bg-[#ccc]">          
+        <div className="col-span-9 max-[495px]:col-span-7 bg-[#ccc]">        
           <Playground
             elements={elements}
             configVals={configVals}
@@ -113,10 +133,17 @@ function App() {
             setIsEdit={setIsEdit}
             setConfigVals={setConfigVals}
             deleteElem={deleteElem}
+            touched={touched}
+            setTouched={setTouched}
           />
-        </div> 
+        </div>
         <div className="col-span-3 max-[495px]:col-span-5 bg-[#000]">        
-          <Sidebar dragHandler={dragHandler} exportJson={elements} />
+          <Sidebar
+            dragHandler={dragHandler}
+            exportJson={elements}
+            touched={touched}
+            setTouched={setTouched}
+          />
         </div>
       </div>
       {open && (

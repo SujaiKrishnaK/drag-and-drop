@@ -2,6 +2,7 @@
 .playground-inp {
   position: absolute;
   touch-action: none;
+  border-radius: 0;
 }
 .playground-inp:hover{
   outline: 1px solid #FF0000;

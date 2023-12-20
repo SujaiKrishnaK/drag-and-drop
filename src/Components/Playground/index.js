@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./playground.css";
 
 const Playground = (props) => {
   const [activeEl, setActiveEl] = useState(null);
+  const groundRef = useRef();
   const {
     openModal,
     elements,
@@ -12,7 +13,28 @@ const Playground = (props) => {
     configVals,
     setConfigVals,
     deleteElem,
+    touched,
+    setTouched
   } = props;
+
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  const handleResize = () => {
+    setWindowSize({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const onEnterKey = (e, obj) => {
     if (e.key === "Enter") {
@@ -25,9 +47,19 @@ const Playground = (props) => {
     }
   };
 
+  const onPlaygroundMove = (e) => {
+    const x = e.changedTouches[0]["clientX"];
+    const y = e.changedTouches[0]["clientY"];
+    let values = { ...configVals };
+    values.x = x;
+    values.y = y;
+    setIsEdit(true);
+    onEdit(values, false);
+  };
+
   const onPlaygroundDrop = (e) => {
-    const x = e.clientX || e.changedTouches[0].clientX;
-    const y = e.clientY || e.changedTouches[0].clientY;
+    const x = e.clientX;
+    const y = e.clientY;
     if (isEdit) {
       let values = { ...configVals };
       values.x = x;
@@ -49,6 +81,10 @@ const Playground = (props) => {
     let el = null;
     let font = `${obj["font-size"]}px`;
     let fontWeight = `${obj["font-weight"]}`;
+    const containerWidth = groundRef?.current?.clientWidth;
+    const containerHeight = groundRef?.current?.clientHeight;
+    let x_percent = Math.round((obj.x / containerWidth) * 100);
+    let y_percent = Math.round((obj.y / containerHeight) * 100);
     if (obj.element === "Label") {
       el = (
         <label
@@ -62,13 +98,15 @@ const Playground = (props) => {
           style={{
             fontSize: font,
             fontWeight: fontWeight,
-            left: obj.x,
-            top: obj.y,
+            left: `${x_percent}%`,
+            top: `${y_percent}%`,
           }}
           onDrag={() => onEditDrag(obj)}
           onTouchMove={() => onEditDrag(obj)}
           autoFocus={activeEl?.id === obj.id}
           onKeyDown={(e) => onEnterKey(e, obj)}
+          onTouchStart={(e) => setTouched(true)}
+          onTouchEnd={(e) => setTouched(false)}
         >
           {obj.text}
         </label>
@@ -87,13 +125,15 @@ const Playground = (props) => {
           style={{
             fontSize: font,
             fontWeight: fontWeight,
-            left: obj.x,
-            top: obj.y,
+            left: `${x_percent}%`,
+            top: `${y_percent}%`,
           }}
           onDrag={() => onEditDrag(obj)}
           onTouchMove={() => onEditDrag(obj)}
           autoFocus={activeEl?.id === obj.id}
           onKeyDown={(e) => onEnterKey(e, obj)}
+          onTouchStart={(e) => setTouched(true)}
+          onTouchEnd={(e) => setTouched(false)}
         ></input>
       );
     }
@@ -109,8 +149,8 @@ const Playground = (props) => {
           style={{
             fontSize: font,
             fontWeight: fontWeight,
-            left: obj.x,
-            top: obj.y,
+            left: `${x_percent}%`,
+            top: `${y_percent}%`,
             backgroundColor: "blue",
             color: "white",
           }}
@@ -118,6 +158,8 @@ const Playground = (props) => {
           onTouchMove={() => onEditDrag(obj)}
           autoFocus={activeEl?.id === obj.id}
           onKeyDown={(e) => onEnterKey(e, obj)}
+          onTouchStart={(e) => setTouched(true)}
+          onTouchEnd={(e) => setTouched(false)}
         >
           {obj.text}
         </button>
@@ -134,12 +176,15 @@ const Playground = (props) => {
 
   return (
     <div
+      ref={groundRef}
       className="bg-[#ccc] overflow-x-scroll relative h-full"
       onDragOver={(e) => e.preventDefault()}
       onDrop={(e) => onPlaygroundDrop(e)}
-      onTouchEndCapture={(e) => onPlaygroundDrop(e)}
+      onTouchEndCapture={(e) => {
+      touched && onPlaygroundMove(e);
+      }}
     >
-      <div className="hidden"></div>    
+      {/* <p style={{position:'absolute',left:'100%'}}>Hello</p> */}
       {renderElement(elements)}
     </div>
   );
