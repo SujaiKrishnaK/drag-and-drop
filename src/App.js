@@ -29,6 +29,9 @@ function App() {
   }, [mobileDrag]);
 
   useEffect(() => {
+    /**
+     * used to persist with local storage
+     */
     let stored = JSON.parse(localStorage.getItem("elements-alma"));
     if (stored?.length) {
       setElements(stored);
@@ -42,6 +45,9 @@ function App() {
   }, []);
 
   useEffect(() => {
+    /**
+     * retrieve from local storage to populate
+     */
     if (elements?.length) {
       let el = JSON.stringify(elements);
       localStorage.setItem("elements-alma", el);
@@ -49,6 +55,10 @@ function App() {
   }, [elements]);
 
   const dragHandler = (e, ele, isMobile) => {
+    /**
+     * isMobile will have {x,y} with
+     * touch devices
+     */
     e.preventDefault();
     setIsEdit(false);
     let values = { ...configVals };
@@ -123,7 +133,8 @@ function App() {
   return (
     <div className="App">
       <div className="grid grid-cols-12 h-full">
-        <div className="col-span-9 max-[495px]:col-span-7 bg-[#ccc]">        
+        <div className="col-span-9 max-[495px]:col-span-7 bg-[#ccc]">
+          {/* left section for dropping elements */}
           <Playground
             elements={elements}
             configVals={configVals}
@@ -137,7 +148,8 @@ function App() {
             setTouched={setTouched}
           />
         </div>
-        <div className="col-span-3 max-[495px]:col-span-5 bg-[#000]">        
+        <div className="col-span-3 max-[495px]:col-span-5 bg-[#000]">
+          {/* right side bar to pick elements */}
           <Sidebar
             dragHandler={dragHandler}
             exportJson={elements}
@@ -146,6 +158,7 @@ function App() {
           />
         </div>
       </div>
+      {/* modal which opens up on drop */}
       {open && (
         <CustomModal
           open={open}

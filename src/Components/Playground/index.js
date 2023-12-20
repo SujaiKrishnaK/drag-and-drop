@@ -1,3 +1,7 @@
+/**
+ * This component will have elements 
+ * which are dragged and dropped into 
+ */
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./playground.css";
 
@@ -14,7 +18,7 @@ const Playground = (props) => {
     setConfigVals,
     deleteElem,
     touched,
-    setTouched
+    setTouched,
   } = props;
 
   const [windowSize, setWindowSize] = useState({
@@ -30,9 +34,9 @@ const Playground = (props) => {
   };
 
   useEffect(() => {
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -77,10 +81,20 @@ const Playground = (props) => {
     setIsEdit(true);
   };
 
+  /**
+   * render elements based on element key
+   * it can be Label or Input or Button
+   * which are defined in Utils element Types
+   */
   const getElements = (obj) => {
     let el = null;
     let font = `${obj["font-size"]}px`;
     let fontWeight = `${obj["font-weight"]}`;
+    /**
+     * calculating the width of container and 
+     * generating percentage value of 
+     * x and y for responsive
+     */
     const containerWidth = groundRef?.current?.clientWidth;
     const containerHeight = groundRef?.current?.clientHeight;
     let x_percent = Math.round((obj.x / containerWidth) * 100);
@@ -180,11 +194,14 @@ const Playground = (props) => {
       className="bg-[#ccc] overflow-x-scroll relative h-full"
       onDragOver={(e) => e.preventDefault()}
       onDrop={(e) => onPlaygroundDrop(e)}
+      /**
+       * onDrop -- for web
+       * onTouchEndCapture -- for mobile devices
+       */
       onTouchEndCapture={(e) => {
-      touched && onPlaygroundMove(e);
+        touched && onPlaygroundMove(e);
       }}
     >
-      {/* <p style={{position:'absolute',left:'100%'}}>Hello</p> */}
       {renderElement(elements)}
     </div>
   );

@@ -16,6 +16,7 @@ const Sidebar = (props) => {
           </div>
         ))}
       </div>
+      {/* Exporting JSON file */}
       <a
         className="cursor-pointer text-[#fff]"
         href={`data:text/json;charset=utf-8,${encodeURIComponent(
